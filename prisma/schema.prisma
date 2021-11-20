@@ -1,0 +1,54 @@
+// This is your Prisma schema file
+// learn more about it in the docs https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Store {
+  id           Int      @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  store_name   String   @id @db.VarChar(255)
+  access_token String   @db.VarChar(255)
+  scope        String[]
+  plan         String   @default("FREE")
+  active       Boolean  @default(true)
+  schemas      Schema[]
+}
+
+model Session {
+  id               String    @id @db.VarChar(255)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  shop             String    @db.VarChar(255)
+  state            String    @db.VarChar(255)
+  expires          DateTime?
+  isOnline         Boolean   @default(false)
+  accessToken      String?   @db.VarChar(255)
+  onlineAccessInfo String?   @db.Text
+  scope            String?
+}
+
+model Schema {
+  id           Int      @id @default(autoincrement())
+  store        Store    @relation(fields: [store_name], references: [store_name])
+  store_name   String   @db.VarChar(255)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  sectionId    String   @db.VarChar(255)
+  sectionLabel String   @default("") @db.VarChar(255)
+  schema       Json
+}
+
+model gdprWebhook {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  data      String?  @db.Text
+}
